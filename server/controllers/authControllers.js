@@ -106,8 +106,8 @@ exports.singin = async(req, res) => {
             })
         }
     
-        console.log("user.password:", user.password);
-    
+        //console.log("user.password:", user.password);
+        
         if(await bcrypt.compare(password, user.password)){
             const token = jwt.sign(
                 {
@@ -118,9 +118,10 @@ exports.singin = async(req, res) => {
                     expiresIn: "72h"
                 }
             )
-    
+            
             user.token = token;
             user.password = undefined;
+            // console.log("Token sent to cookie: ", token);
     
             const options = {
                 expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
