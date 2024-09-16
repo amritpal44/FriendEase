@@ -121,6 +121,7 @@ exports.singin = async(req, res) => {
             
             user.token = token;
             user.password = undefined;
+            user.friendLength = user.friends.length;
             // console.log("Token sent to cookie: ", token);
     
             const options = {
@@ -129,6 +130,8 @@ exports.singin = async(req, res) => {
             }
             res.cookie("token", token, options).status(200).json({
                 success: true,
+                user,
+                token,
                 message: "User login success",
             })
         }
