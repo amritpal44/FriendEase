@@ -67,9 +67,9 @@ exports.sendFriendRequest = async (req, res) => {
 exports.acceptFriendRequest = async (req, res) => {
     try {
         const { friendshipId } = req.body;
-        const userId = req.user._id;
+        const userId = req.user._id.toString(); // Convert to string for comparison
 
-        //find the pending friendship request
+        // Find the pending friendship request
         const friendship = await friendshipModel.findOneAndUpdate(
             { _id: friendshipId, user2: userId, status: 'pending' },
             { status: 'accepted' },
@@ -83,8 +83,8 @@ exports.acceptFriendRequest = async (req, res) => {
             });
         }
 
-        //add both users to each other's friends list
-        //userId === friendship.user2 (as user1 has sent the request for friendship)
+        // Add both users to each other's friends list
+        // userId === friendship.user2 (as user1 has sent the request for friendship)
         await userModel.findByIdAndUpdate(userId, {
             $push: { friends: friendship.user1 }
         });
@@ -92,13 +92,40 @@ exports.acceptFriendRequest = async (req, res) => {
             $push: { friends: userId }
         });
 
-        //remove the friend request entry for both users
+        // Remove the friend request entry for both users
         await userModel.findByIdAndUpdate(userId, {
             $pull: { friendRequest: friendshipId }
         });
         await userModel.findByIdAndUpdate(friendship.user1, {
             $pull: { friendRequest: friendshipId }
         });
+
+        // ******************************************************************************************************************************************
+        // Update potential friends logic
+        const user1 = await userModel.findById(userId).populate("friends");
+        const user2 = await userModel.findById(friendship.user1).populate("friends");
+
+        const user1Friends = user1.friends.map(f => f._id.toString());
+        const user2Friends = user2.friends.map(f => f._id.toString());
+
+        // Add all friends of user1 to user2's potential friends (excluding already existing friends and self)
+        const newPotentialFriendsForUser2 = user1Friends.filter(friendId => 
+            !user2Friends.includes(friendId) && friendId !== userId
+        );
+
+        await userModel.findByIdAndUpdate(friendship.user1, {
+            $addToSet: { potentialFriends: { $each: newPotentialFriendsForUser2 } }
+        });
+
+        // Add all friends of user2 to user1's potential friends (excluding already existing friends and self)
+        const newPotentialFriendsForUser1 = user2Friends.filter(friendId => 
+            !user1Friends.includes(friendId) && friendId !== friendship.user1.toString()
+        );
+
+        await userModel.findByIdAndUpdate(userId, {
+            $addToSet: { potentialFriends: { $each: newPotentialFriendsForUser1 } }
+        });
+        // *******************************************************************************************************************************************
 
         return res.status(200).json({
             success: true,
@@ -113,6 +140,7 @@ exports.acceptFriendRequest = async (req, res) => {
         });
     }
 };
+
 
 
 //i am still storing the rejected request in friendship db
@@ -178,6 +206,32 @@ exports.removeFriend = async (req, res) => {
         // Remove the friend from both users' friends list
         await userModel.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
         await userModel.findByIdAndUpdate(friendId, { $pull: { friends: userId } });
+
+
+        //******************************************************************************************************************************************* */
+
+        // Get the friends of both users
+        const user1 = await userModel.findById(userId).populate("friends");
+        const user2 = await userModel.findById(friendId).populate("friends");
+
+        const user1Friends = user1.friends.map(f => f._id.toString());
+        const user2Friends = user2.friends.map(f => f._id.toString());
+
+        // Find mutual friends
+        const mutualFriends = user1Friends.filter(friend => user2Friends.includes(friend));
+
+        // Remove the mutual friends from potential friends list for both users
+        await userModel.findByIdAndUpdate(userId, {
+            $pull: { potentialFriends: { $in: mutualFriends } }
+        });
+
+        await userModel.findByIdAndUpdate(friendId, {
+            $pull: { potentialFriends: { $in: mutualFriends } }
+        });
+
+        //******************************************************************************************************************************************* */
+
+
 
         return res.status(200).json({
             success: true,
