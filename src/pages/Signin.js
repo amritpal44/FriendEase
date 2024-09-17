@@ -3,14 +3,17 @@ import { authEndpoints } from '../services/apis';
 import { apiConnector } from '../services/apiconnector';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setToken } from '../slices/authSlice';
 import { setUser } from '../slices/profileSlice';
+import { FaSpinner } from 'react-icons/fa';
 
 
 const Signin = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const {loading} = useSelector( (state) => state.auth);
     
     const [formData, setFormData] = useState({
         userName: "",
@@ -91,7 +94,11 @@ const Signin = () => {
       
             <button type='submit' className='bg-[#3d65ff] rounded-lg sm:rounded-full text-slate-200 font-medium text-lg p-4 
             cursor-pointer hover:-translate-y-1 ease-linear duration-200 m-2'>
-              Sign in
+              {loading ? (
+                  <FaSpinner className='animate-spin text-white mx-auto' />
+              ) : (
+                  'Sign in'
+              )}
             </button>
           </form>
 

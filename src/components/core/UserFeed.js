@@ -19,16 +19,16 @@ const UserFeed = () => {
   const { user: currentUser } = useSelector((state) => state.profile);
   const { results: searchResults } = useSelector((state) => state.search); // Access search results
 
-  // Fetch random users if there are no search results
-  const fetchUsers = async (page) => {
+  // Fetch recommended users if there are no search results
+  const fetchRecommendedUsers = async (page) => {
     dispatch(setLoading(true));
     try {
-      const response = await apiConnector("POST", recommendationEndpoints.GET_RANDOM_USERS, { page: page });
+      const response = await apiConnector("POST", recommendationEndpoints.GET_RECOMMENDED_USERS, { page: page, limit: 10 });
       setUsers(response.data.users);
       setTotalPages(response.data.totalPages);
     } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error('Failed to load users');
+      console.error('Error fetching recommended users:', error);
+      toast.error('Failed to load recommended users');
     }
     dispatch(setLoading(false));
   };
@@ -49,9 +49,9 @@ const UserFeed = () => {
   };
 
   useEffect(() => {
-    // Only fetch random users if no search results exist
+    // Only fetch recommended users if no search results exist
     if (searchResults.length === 0) {
-      fetchUsers(currentPage);
+      fetchRecommendedUsers(currentPage);
     } else {
       // If there are search results, use them
       setUsers(searchResults);
@@ -71,7 +71,7 @@ const UserFeed = () => {
         </div>
       ) : (
         <>
-          <h1 className="text-white text-2xl mb-4">User Feed</h1>
+          {/* <h1 className="text-white text-2xl mb-4">User Feed</h1> */}
 
           <div className="flex flex-wrap gap-4 justify-center">
             {users.length > 0 ? (

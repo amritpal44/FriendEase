@@ -1,5 +1,76 @@
 const userModel = require("../models/userModel");
 
+const mongoose = require("mongoose");
+
+exports.getRecommendedUsers = async (req, res) => {
+  try {
+    const userId = req.user._id; // Convert userId to ObjectId for MongoDB
+    const { page = 1, limit = 10 } = req.body;
+
+    // Fetch the current user with friends and potential friends
+    const currentUser = await userModel.findById(userId)
+      .select('friends potentialFriends friendRequest');
+
+    if (!currentUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Exclude friends, friend requests, and the current user from results
+    const friendIds = currentUser.friends.map(friend => friend.toString());
+    const friendRequestIds = currentUser.friendRequest.map(request => {
+      return request.user1.toString() === userId.toString() ? request.user2.toString() : request.user1.toString();
+    });
+    const excludeIds = [userId.toString(), ...friendIds, ...friendRequestIds];
+
+    let recommendedUsers = [];
+
+    // If there are potential friends, sort them by mutualFriendsCount
+    if (currentUser.potentialFriends && currentUser.potentialFriends.length > 0) {
+      const sortedPotentialFriends = currentUser.potentialFriends
+        .filter(potential => potential.friendId && !excludeIds.includes(potential.friendId.toString())) // Exclude undefined friendId and current friends and requests
+        .sort((a, b) => b.mutualFriendsCount - a.mutualFriendsCount); // Sort by mutual friends count in descending order
+
+      // Limit to the requested number of users
+      recommendedUsers = sortedPotentialFriends.slice(0, limit);
+    }
+
+    // If there are not enough recommended users, fill the rest with random users
+    const remainingCount = limit - recommendedUsers.length;
+    if (remainingCount > 0) {
+      const randomUsers = await userModel
+        .find({
+          _id: { $nin: excludeIds.concat(recommendedUsers.map(user => user.friendId)) }
+        })
+        .limit(remainingCount)
+        .select('userName bio hobbies');
+      
+      // Append random users to the recommended users
+      recommendedUsers = recommendedUsers.concat(randomUsers);
+    }
+
+    // Prepare the final list of users to return with hobbies populated
+    const resultUsers = await userModel.find({
+      _id: { $in: recommendedUsers.map(user => new mongoose.Types.ObjectId(user.friendId || user._id)) }
+    })
+    .select('userName bio hobbies')
+    .populate('hobbies', 'name');  // Populate the hobbies field with the hobby names
+
+    return res.status(200).json({
+      success: true,
+      users: resultUsers,
+      totalUsers: resultUsers.length,
+      totalPages: Math.ceil(resultUsers.length / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error fetching recommended users:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch users" });
+  }
+};
+
+
+
+
 exports.getRandomUsers = async (req, res) => {
   try {
     const userId = req.user._id; 

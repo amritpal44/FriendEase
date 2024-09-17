@@ -11,8 +11,6 @@ const HomePage = () => {
   const {token} = useSelector( (state) => state.auth);
 
 
-  console.log(user);
-
   return (
     <div className='bg-[#0d192b] h-full flex-col overflow-y-scroll'>
       <Navbar/>
@@ -49,7 +47,7 @@ const HomePage = () => {
             </div>
 
 
-            <div id='user-feed'>
+            <div id='user-feed' className='w-4/6'>
               <UserFeed/>
             </div>
 

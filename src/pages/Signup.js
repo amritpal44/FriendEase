@@ -3,10 +3,15 @@ import { toast } from 'react-hot-toast'
 import { apiConnector } from '../services/apiconnector';
 import { authEndpoints } from '../services/apis';
 import { useNavigate } from 'react-router-dom';
+import { FaSpinner } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../slices/authSlice';
 
 const Signup = () => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {loading} = useSelector( (state) => state.auth);
 
   const [formData, setFormData] = useState({
     userName: "",
@@ -29,20 +34,20 @@ const Signup = () => {
 
   const handleOnSubmit = async (event) => {
     event.preventDefault();
-
+    
     if(password !== confirmPassword){
       toast.error("Password donot match");
       console.log("password donot match");
       return
     }
-
+    
     const hobbiesArray = hobbies.split(' ').filter(hobby => hobby.trim() !== "");
     const updatedFormData = {
       ...formData,
       hobbies: hobbiesArray
     };
-
-    console.log("form Data: ", updatedFormData);
+    
+    dispatch(setLoading(true));
 
     try {
       const response = await apiConnector("POST", authEndpoints.SIGNUP_API, updatedFormData);
@@ -59,6 +64,8 @@ const Signup = () => {
       console.log("Error in signup: ", error);
       toast.error(error?.response?.data?.message);
     }
+
+    dispatch(setLoading(false));
 
     //RESET DATA
     setFormData({
@@ -118,7 +125,11 @@ const Signup = () => {
           </div>
 
           <button type='submit' className='bg-[#3d65ff] rounded-full text-slate-200 font-medium text-lg px-6 py-3 cursor-pointer hover:-translate-y-1 ease-linear duration-200 mt-4'>
-            Create Account
+            {loading ? (
+                <FaSpinner className='animate-spin text-white mx-auto w-full' />
+            ) : (
+                'Sign in'
+            )}
           </button>
         </form>
 

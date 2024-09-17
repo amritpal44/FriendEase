@@ -34,8 +34,8 @@ const userSchema = new mongoose.Schema({
     ],
     potentialFriends: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            friendId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Store the user ID
+            mutualFriendsCount: { type: Number, default: 0 }
         }
     ],
     friendRequest: [
