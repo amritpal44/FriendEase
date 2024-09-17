@@ -64,7 +64,7 @@ const UserFeed = () => {
   };
 
   return (
-    <div className="bg-[#0d192b] py-8 flex flex-col items-center">
+    <div className=" py-8 flex flex-col items-center">
       {loading ? (
         <div className='flex flex-wrap justify-center h-full w-full items-center max-w-[1000px]'>
           <ClipLoader size={50} />

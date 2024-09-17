@@ -38,7 +38,7 @@ const FriendsList = () => {
   };
 
   return (
-    <div className="bg-[#0d192b] p-6 text-white border-slate-200 border-[1px] rounded-md">
+    <div className=" p-6 text-white border-slate-200 border-[1px] rounded-md">
       <h2 className="text-xl font-semibold mb-4">Your Friends</h2>
       {loadingFriends ? (
         <ClipLoader size={50} />

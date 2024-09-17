@@ -64,15 +64,13 @@ const Navbar = () => {
   return (
     <div id='#navbar' className='z-20 bg-slate-950 font-clarity-city px-0 p-1 sm:p-2 md:px-7 sm:px-3'>
       <div className='flex justify-between max-w-5xl mx-auto'>
+      <div className='flex items-center'>
         <Link to={"/"}>
           <div className='flex items-center justify-center text-slate-200 text-2xl sm:text-3xl md:text-4xl gap-1 p-3'>
             <img src={logo} alt='friendease logo' className="w-5 sm:w-6 md:w-9 max-w-[45px]" />
-            <h1 className='-translate-x-[6px]'>riendEase</h1>
+            <h1 className='-translate-x-[6px] hidden md:block'>riendEase</h1>
           </div>
         </Link>
-
-        <div className='flex gap-2 sm:gap-4 p-2'>
-          {/* Search Bar */}
           {token !== null && (
             <input
               type="text"
@@ -80,9 +78,14 @@ const Navbar = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
-              className="bg-slate-800 text-white px-4 py-2 rounded-md"
+              className="bg-slate-800 text-white px-1 w-32 h-10 md:h-12 md:w-44 md:px-4 py-2 rounded-md"
             />
           )}
+
+      </div>
+
+        <div className='flex gap-2 sm:gap-4 p-2'>
+          {/* Search Bar */}
 
           {token === null && (
             <Link to="/signin">
