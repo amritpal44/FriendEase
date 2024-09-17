@@ -73,7 +73,7 @@ const UserFeed = () => {
         <>
           {/* <h1 className="text-white text-2xl mb-4">User Feed</h1> */}
 
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center w-full mx-auto">
             {users.length > 0 ? (
               users
                 .filter((user) => user._id !== currentUser._id)

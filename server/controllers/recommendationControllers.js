@@ -15,11 +15,15 @@ exports.getRecommendedUsers = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Exclude friends, friend requests, and the current user from results
-    const friendIds = currentUser.friends.map(friend => friend.toString());
-    const friendRequestIds = currentUser.friendRequest.map(request => {
-      return request.user1.toString() === userId.toString() ? request.user2.toString() : request.user1.toString();
-    });
+    // Ensure that currentUser.friends and currentUser.friendRequest are arrays
+    const friendIds = (currentUser.friends || []).map(friend => friend?.toString()).filter(Boolean);
+    const friendRequestIds = (currentUser.friendRequest || []).map(request => {
+      if (!request) return null;
+      return request.user1?.toString() === userId.toString() 
+        ? request.user2?.toString() 
+        : request.user1?.toString();
+    }).filter(Boolean);
+
     const excludeIds = [userId.toString(), ...friendIds, ...friendRequestIds];
 
     let recommendedUsers = [];
@@ -48,12 +52,10 @@ exports.getRecommendedUsers = async (req, res) => {
       recommendedUsers = recommendedUsers.concat(randomUsers);
     }
 
-    // Prepare the final list of users to return with hobbies populated
+    // Prepare the final list of users to return
     const resultUsers = await userModel.find({
       _id: { $in: recommendedUsers.map(user => new mongoose.Types.ObjectId(user.friendId || user._id)) }
-    })
-    .select('userName bio hobbies')
-    .populate('hobbies', 'name');  // Populate the hobbies field with the hobby names
+    }).select('userName bio hobbies').populate('hobbies', 'name'); // Populate hobbies
 
     return res.status(200).json({
       success: true,
@@ -67,6 +69,7 @@ exports.getRecommendedUsers = async (req, res) => {
     return res.status(500).json({ success: false, message: "Failed to fetch users" });
   }
 };
+
 
 
 

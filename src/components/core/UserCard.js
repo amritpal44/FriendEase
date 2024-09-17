@@ -5,7 +5,7 @@ const UserCard = ({ user, onSendRequest, isPending }) => {
 
 
   return (
-    <div className="bg-white text-black p-4 rounded-lg shadow-md flex flex-col items-center w-[45%]">
+    <div className="bg-white text-black p-4 rounded-lg shadow-md flex flex-col items-center w-[80%]  lg:w-[45%]">
       <div className='flex justify-around items-center w-full'>
         <img 
           src={`https://api.dicebear.com/5.x/initials/svg?seed=${user.userName[0]} ${user.userName[1]}`} 

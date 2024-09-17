@@ -44,15 +44,19 @@ const ManageFriends = () => {
         <h1 className="text-white text-2xl mb-4">Manage Friends</h1>
         <ul className="space-y-4">
             {friends.map((friend, index) => (
-            <li key={friend._id} className="flex items-center space-x-4 border-slate-200 border-[1px] rounded-md px-3 py-1">
-                <span className="font-semibold text-slate-200">{index + 1}. </span>
-                <span className='text-slate-200 text-lg font-semibold'>{friend.userName}</span>
-                <button
-                onClick={() => handleRemoveFriend(friend._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-                >
-                Remove Friend
-                </button>
+            <li key={friend._id} className="flex items-center space-x-4 border-slate-200 border-[1px] rounded-md px-3 py-1 w-full justify-between">
+                <div>
+                  <span className="font-semibold text-slate-200">{index + 1}. </span>
+                  <span className='text-slate-200 text-lg font-semibold'>{friend.userName}</span>
+                </div>
+                <div>
+                  <button
+                  onClick={() => handleRemoveFriend(friend._id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                  >
+                  Remove Friend
+                  </button>
+                </div>
             </li>
             ))}
         </ul>

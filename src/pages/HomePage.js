@@ -18,7 +18,7 @@ const HomePage = () => {
       {
         token ? (
 
-          <div id='container' className='flex flex-col sm:flex-row max-w-6xl mx-auto justify-around mt-10 gap-6 mx-6'>
+          <div id='container' className='flex flex-col sm:flex-row max-w-6xl mx-auto justify-around mt-10'>
 
             <div id='user-info' className='border-slate-200 hidden rounded-md md:block'>
               <div className="flex flex-col justify-center  items-center gap-4 text-slate-200 max-w-52 border-slate-200 border-[1px] px-4 py-6 rounded-md">
@@ -47,7 +47,7 @@ const HomePage = () => {
             </div>
 
 
-            <div id='user-feed' className='w-4/6'>
+            <div id='user-feed' className='w-full lg:w-4/6'>
               <UserFeed/>
             </div>
 
