@@ -97,7 +97,7 @@ exports.singin = async(req, res) => {
             })
         }
     
-        let user = await userModel.findOne({userName: userName});
+        let user = await userModel.findOne({userName: userName}).populate('hobbies', 'hobby');
     
         if(!user){
             return res.status(401).json({

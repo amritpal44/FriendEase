@@ -17,12 +17,25 @@ exports.sendFriendRequest = async (req, res) => {
             });
         }
 
+        //checking if request already sent
+        const alreadySend = await friendshipModel.findOne({
+            $or: [
+                { user1: userId, user2: friendId },
+                { user1: friendId, user2: userId }
+            ]
+        });
+        if(alreadySend){
+            return res.status(400).json({
+                success: false,
+                message: "Friend request already sent"
+            })
+        }
+
         //checking if friendship already exists
         const existingFriendship = await userModel.findOne({ 
             _id: userId,
             friends: friendId
         });
-
         if (existingFriendship) {
             return res.status(400).json({
                 success: false,
@@ -152,7 +165,7 @@ exports.rejectFriendRequest = async (req, res) => {
 
         //update friendship table
         //checking for user2 in this request is neccessary so that we can validate that no other user is altering the request
-        const friendship = await friendshipModel.findOneAndUpdate(
+        const friendship = await friendshipModel.findOneAndDelete(
             { _id: friendshipId, user2: userId, status: 'pending' },
             { status: 'rejected' },
             { new: true }
@@ -251,14 +264,14 @@ exports.getFriendRequests = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        //find the user and populate the friendRequest field with pending requests
+        
         const user = await userModel.findById(userId)
             .populate({
                 path: 'friendRequest',
                 match: { status: 'pending' },
                 populate: { 
                     path: 'user1', select: 'userName' 
-                }//sender data
+                } // sender data
             });
 
         if (!user) {
@@ -268,9 +281,14 @@ exports.getFriendRequests = async (req, res) => {
             });
         }
 
+        // Filter out friend requests where user1 is the current user
+        const filteredFriendRequests = user.friendRequest.filter(request => {
+            return request.user1._id.toString() !== userId.toString();
+        });
+
         return res.status(200).json({
             success: true,
-            friendRequests: user.friendRequest
+            friendRequests: filteredFriendRequests
         });
     } catch (error) {
         console.log("Error fetching friend requests:", error);
@@ -285,6 +303,8 @@ exports.getFriendRequests = async (req, res) => {
 exports.getFriends = async (req, res) => {
     try {
         const userId = req.user._id;
+
+        console.log("user id" , userId);
 
         //populate the user friends field
         const user = await userModel.findById(userId).populate('friends', 'userName image bio hobbies');

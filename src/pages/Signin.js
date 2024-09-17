@@ -68,7 +68,7 @@ const Signin = () => {
       
         <div className='px-4 sm:px-8 py-8 sm:py-10 flex  flex-col flex-wrap bg-[#f3f8ff] max-w-xl sm:max-w-xl mt-8 rounded-3xl gap-2 mx-auto'>
           <h1 className='text-2xl sm:text-4xl font-bold p-2'>
-            Log In
+            Sign In
           </h1>
           <p className='text-sm sm:text-base p-2'>
             Join our community and connect with friends through shared interests and mutual connections!

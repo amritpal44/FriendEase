@@ -12,6 +12,9 @@ const app  = express();
 const userRoutes = require("./routes/userRoutes");
 const friendshipRoutes = require("./routes/friendshipRoutes");
 const searchUserRoutes = require("./routes/searchRoutes");
+const recommendationRoutes = require("./routes/recommendationRoutes");
+
+
 
 app.use( express.json() );
 app.use( cookieParser() );
@@ -23,6 +26,7 @@ app.use(cors({
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/friendship", friendshipRoutes);
 app.use("/api/v1/search", searchUserRoutes);
+app.use("/api/v1/recommendation", recommendationRoutes);
 
 
 

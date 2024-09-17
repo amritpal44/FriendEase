@@ -22,5 +22,5 @@ export const searchEndpoints = {
 }
 
 export const recommendationEndpoints = {
-    
+    GET_RANDOM_USERS: BASE_URL + "/recommendation/getRandomUsers"
 }
