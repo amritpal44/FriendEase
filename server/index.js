@@ -15,12 +15,16 @@ const searchUserRoutes = require("./routes/searchRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
 
 
+// const allowedOrigins = [
+// "http://localhost:3000", 
+// "https://friendease-frontend.vercel.app"
+// ];
 
 app.use( express.json() );
 app.use( cookieParser() );
 app.use(cors({
-    origin: "http://localhost:3000", 
-    credentials: true
+origin: true, // Allows all origins
+credentials: true
 }));
 
 app.use("/api/v1/auth", userRoutes);

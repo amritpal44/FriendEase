@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { authEndpoints } from '../services/apis';
 import { apiConnector } from '../services/apiconnector';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setLoading, setToken } from '../slices/authSlice';
 import { setUser } from '../slices/profileSlice';
@@ -94,6 +94,14 @@ const Signin = () => {
               Sign in
             </button>
           </form>
+
+          <div className="mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between p-2">
+            <Link to="/signup">
+              <p className="text-sm sm:text-base flex items-center gap-x-2">
+                 Dont have a account? <span className='text-blue-400 underline'> Singup here</span> 
+              </p>
+            </Link>
+          </div>
       
         </div>
       </div>

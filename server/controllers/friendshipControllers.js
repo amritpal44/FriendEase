@@ -304,7 +304,7 @@ exports.getFriends = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        console.log("user id" , userId);
+        //console.log("user id" , userId);
 
         //populate the user friends field
         const user = await userModel.findById(userId).populate('friends', 'userName image bio hobbies');
